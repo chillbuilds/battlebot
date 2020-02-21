@@ -1,7 +1,7 @@
 const net = require('net')
 const client = new net.Socket()
 const port = 7070
-const host = '192.168.137.252'
+const host = '192.168.137.37'
 
 var keypress = require('keypress');
  
