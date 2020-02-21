@@ -21,8 +21,7 @@ function accept(req, res) {
 
 function onConnect(ws) {
   ws.on('message', function (message) {
-    let name = 'raspberry pi'
-    ws.send(`Connection established @ ${name}`)
+    ws.send(message)
     console.log(message)
   });
 }
