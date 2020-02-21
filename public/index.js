@@ -1,50 +1,28 @@
-
-// $(document).on("keydown", function(event) {
-//     // alert(event.which)
-//     console.log(event.which)
-// });
-
-// const webSocket = new WebSocket('ws://192.168.137.37:7070')
-
-// webSocket.onopen = function (event) {
-//     console.log(event)
-//     webSocket.send("Here's some text that the server is urgently awaiting!"); 
-// };
-
-
-// $('.postBtn').on('click', function(){
-//     webSocket.send("Here's some text that the server is urgently awaiting!")
-//     webSocket.close()
-// })
-// webSocket.send("Here's some text that the server is urgently awaiting!"); 
-
 let socket = new WebSocket('ws://192.168.137.37:7070');
 
 socket.onopen = function(e) {
-  console.log("[open] Connection established");
-  console.log("Sending to server");
-  socket.send("My name is John");
+  console.log("Server connection established");
+  socket.send("Browser connection established");
 };
 
 socket.onmessage = function(event) {
-  console.log(`[message] Data received from server: ${event.data}`);
+  console.log(`Data received from server: ${event.data}`);
 };
 
 socket.onclose = function(event) {
   if (event.wasClean) {
-    console.log(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+    alert(`The server enjoyed your company, but had to bounce because ${event.reason}`);
   } else {
     // e.g. server process killed or network down
     // event.code is usually 1006 in this case
-    console.log('[close] Connection died');
+    alert(`The server's last words were "I would have gotten away with it, too. If it wasn't for error code ${event.code}"`);
   }
 };
 
 socket.onerror = function(error) {
-  console.log(`[error] ${error.message}`);
+  alert(`Socket error: ${error.message}`);
 };
 
 $(document).on("keydown", function(event) {
-    // alert(event.which)
-    console.log(event.which)
+    socket.send(event.which)
 });
