@@ -2,22 +2,18 @@ let activeSocket = false
 var socket;
 let lastKey = ''
 
-let keyArr = [
-    {code: 87, codeStr: '87', action: '', pressed: false},
-    {code: 65, codeStr: '65', action: '', pressed: false},
-    {code: 83, codeStr: '83', action: '', pressed: false},
-    {code: 68, codeStr: '68', action: '', pressed: false},
-    {code: 32, codeStr: '32', action: '', pressed: false}]
+let keyArr = [87, 65, 83, 68, 32]
 
 $(connectBtn).on('click', function() {
   if(activeSocket === false){
 
-    activeSocket = true
     socket = new WebSocket('ws://192.168.43.72:7070')
+    activeSocket = true
 
     socket.onopen = function(e) {
-      console.log("Server connection established")
-      socket.send("Browser connection established")
+      console.log('Server connection established')
+      socket.send('Browser connection established')
+      $('#connectBtn').attr('style', 'background: rgba(0, 255, 0, 0.5);')
     }
     
     socket.onmessage = function(event) {
@@ -26,25 +22,31 @@ $(connectBtn).on('click', function() {
     
     socket.onclose = function(event) {
       if (event.wasClean) {
-        alert('Thanks for playing. Please tip your server.')
+        $('#connectBtn').attr('style', 'background: rgba(0, 0, 0, 0);')
         activeSocket = false
       } else {
         // server process killed or network down
         alert(`You pull the monster mask off the server as it utters, "I would have gotten away with it, too. If it wasn't for error code ${event.code}"`)
         activeSocket = false
+        $('#connectBtn').attr('style', 'background: rgba(255, 0, 0, 0.5);')
       }
     }
     
     socket.onerror = function(error) {
-      alert(`Socket error: ${error.message}`)
+      $('#connectBtn').attr('style', 'background: rgba(255, 0, 0, 0.5);')
+      activeSocket = false
     }
+  }else{
+    activeSocket = false
+    socket.send('Browser connection closed')
+    socket.close()
   }
 })
 
 $(document).on('keydown', function(event) {
   if(activeSocket === true){
   for(var i = 0; i < keyArr.length; i++){
-    if(keyArr[i].code === event.which && event.which !== lastKey){
+    if(keyArr[i] === event.which && event.which !== lastKey){
       socket.send(`keydown @ ${event.which}`)
     }
   }
@@ -53,8 +55,12 @@ $(document).on('keydown', function(event) {
 })
 
 $(document).on('keyup', function(event) {
-  socket.send(`keyup @ ${event.which}`)
+  for(var i = 0; i < keyArr.length; i++){
+    if(keyArr[i] === event.which){
+      socket.send(`keyup @ ${event.which}`)
+    }
+  }
   if(event.which === lastKey){
-    lastKey = 999
+    lastKey = undefined
   }
 })
