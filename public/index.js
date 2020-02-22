@@ -1,35 +1,60 @@
-let socket = new WebSocket('ws://192.168.137.37:7070')
+let activeSocket = false
+var socket;
+let lastKey = ''
+
 let keyArr = [
-    {code: 87, key: 'w', action: '', pressed: false},
-    {code: 65, key: 'a', action: '', pressed: false},
-    {code: 83, key: 's', action: '', pressed: false},
-    {code: 68, key: 'd', action: '', pressed: false}]
+    {code: 87, codeStr: '87', action: '', pressed: false},
+    {code: 65, codeStr: '65', action: '', pressed: false},
+    {code: 83, codeStr: '83', action: '', pressed: false},
+    {code: 68, codeStr: '68', action: '', pressed: false},
+    {code: 32, codeStr: '32', action: '', pressed: false}]
 
-socket.onopen = function(e) {
-  console.log("Server connection established")
-  socket.send("Browser connection established")
-};
+$(connectBtn).on('click', function() {
+  if(activeSocket === false){
 
-socket.onmessage = function(event) {
-  console.log(`Data received from server: ${event.data}`)
-};
+    activeSocket = true
+    socket = new WebSocket('ws://192.168.43.72:7070')
 
-socket.onclose = function(event) {
-  if (event.wasClean) {
-    alert(`The server enjoyed your company, but had to bounce because ${event.reason}`)
-  } else {
-    // server process killed or network down
-    alert(`The server's last words were "I would have gotten away with it, too. If it wasn't for error code ${event.code}"`);
-  }
-}
-
-socket.onerror = function(error) {
-  alert(`Socket error: ${error.message}`);
-};
-
-$(document).on("keydown", function(event) {
-    for(var i = 0; i < keyArr.length; i++){
-        if(keyArr[i].code === event.which){
-        socket.send(keyArr[i].key)}
+    socket.onopen = function(e) {
+      console.log("Server connection established")
+      socket.send("Browser connection established")
     }
-});
+    
+    socket.onmessage = function(event) {
+      console.log(`Data from server: ${event.data}`)
+    }
+    
+    socket.onclose = function(event) {
+      if (event.wasClean) {
+        alert('Thanks for playing. Please tip your server.')
+        activeSocket = false
+      } else {
+        // server process killed or network down
+        alert(`You pull the monster mask off the server as it utters, "I would have gotten away with it, too. If it wasn't for error code ${event.code}"`)
+        activeSocket = false
+      }
+    }
+    
+    socket.onerror = function(error) {
+      alert(`Socket error: ${error.message}`)
+    }
+  }
+})
+
+$(document).on('keydown', function(event) {
+  if(activeSocket === true){
+  for(var i = 0; i < keyArr.length; i++){
+    if(keyArr[i].code === event.which && event.which !== lastKey){
+      socket.send(`keydown @ ${event.which}`)
+    }
+  }
+  lastKey = event.which
+}
+})
+
+$(document).on('keyup', function(event) {
+  socket.send(`keyup @ ${event.which}`)
+  if(event.which === lastKey){
+    lastKey = 999
+  }
+})

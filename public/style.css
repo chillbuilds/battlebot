@@ -2,10 +2,8 @@ body {
     background: #717744;
 }
 
-.postBtn {
-    background: #BCBD8B;
-    color: #373D20;
-    font-size: 36px;
-    font-weight: bold;
-    padding: 2px 100px;
+#connectBtn {
+    width: 20%;
+    margin-left: 40%;
+    margin-top: 20%;
 }

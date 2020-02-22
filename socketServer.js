@@ -1,5 +1,6 @@
-const http = require('http');
-const ws = require('ws');
+const http = require('http')
+const ws = require('ws')
+const port = 7070
 
 const wss = new ws.Server({noServer: true});
 
@@ -28,7 +29,7 @@ function onConnect(ws) {
 
 if (!module.parent) {
   http.createServer(accept).listen(7070);
-  console.log('\nWebSocket Server Running @ ws://192.168.137.37:7070\n')
+  console.log(`\nWebSocket server running on port ${port}\n`)
 } else {
   exports.accept = accept
   console.log('WebSocket Server Failed')
